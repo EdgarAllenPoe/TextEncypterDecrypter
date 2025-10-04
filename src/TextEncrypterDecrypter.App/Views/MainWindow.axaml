@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TextEncrypterDecrypter.Core.ViewModels"
+        x:DataType="vm:MainViewModel"
+        x:Class="TextEncrypterDecrypter.App.Views.MainWindow"
+        Title="TextEncrypterDecrypter" Width="600" Height="500"
+        Icon="/Assets/avalonia-logo.ico">
+
+  <Grid Margin="20">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    
+    <!-- Title -->
+    <TextBlock Grid.Row="0" 
+               Text="Text Encrypter/Decrypter" 
+               FontSize="24" 
+               FontWeight="Bold"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,20"/>
+    
+    <!-- Text Input -->
+    <TextBox Grid.Row="1" 
+             Text="{Binding Text}" 
+             Watermark="Enter text to encrypt/decrypt..."
+             AcceptsReturn="True"
+             Height="100"
+             Margin="0,0,0,10"/>
+    
+    <!-- Password Input -->
+    <TextBox Grid.Row="2" 
+             Text="{Binding Password}" 
+             PasswordChar="*"
+             Watermark="Enter password..."
+             Margin="0,0,0,10"/>
+    
+    <!-- Buttons -->
+    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,10">
+      <Button Content="Encrypt" 
+              Command="{Binding EncryptCommand}"
+              Margin="0,0,10,0"
+              IsEnabled="{Binding !IsLoading}"/>
+      <Button Content="Decrypt" 
+              Command="{Binding DecryptCommand}"
+              IsEnabled="{Binding !IsLoading}"/>
+    </StackPanel>
+    
+    <!-- Encrypted Text Output -->
+    <TextBox Grid.Row="4" 
+             Text="{Binding EncryptedText}" 
+             IsReadOnly="True"
+             Watermark="Encrypted text will appear here..."
+             AcceptsReturn="True"
+             Margin="0,0,0,10"/>
+    
+    <!-- Status/Error Messages -->
+    <StackPanel Grid.Row="5" Orientation="Horizontal">
+      <TextBlock Text="{Binding StatusMessage}"
+                 Foreground="Red"
+                 VerticalAlignment="Center"/>
+      <ProgressBar IsIndeterminate="True"
+                   IsVisible="{Binding IsLoading}"
+                   Width="100"
+                   Height="4"
+                   Margin="10,0,0,0"/>
+    </StackPanel>
+  </Grid>
+</Window>

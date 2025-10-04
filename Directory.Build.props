@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors>NU1701</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <!-- Test project specific properties -->
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <IsPackable>false</IsPackable>
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+    <CoverletOutput>./coverage/</CoverletOutput>
+    <ExcludeByFile>**/*Migrations/**/*.cs</ExcludeByFile>
+    <Exclude>[*.Tests]*,[*.UITests]*</Exclude>
+    <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+    <Threshold>80</Threshold>
+    <ThresholdType>line</ThresholdType>
+  </PropertyGroup>
+
+  <!-- Test categories -->
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <DefaultTestCategories>unit</DefaultTestCategories>
+  </PropertyGroup>
+</Project>
