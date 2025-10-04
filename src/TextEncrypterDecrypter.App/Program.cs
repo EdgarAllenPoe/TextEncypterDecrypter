@@ -42,6 +42,7 @@ class Program
                 // Register services
                 services.AddSingleton<IEncryptionService, EncryptionService>();
                 services.AddSingleton<ISettingsService, JsonSettingsService>();
+                services.AddSingleton<IClipboardService, ClipboardService>();
                 
                 // Register ViewModels
                 services.AddTransient<MainViewModel>();

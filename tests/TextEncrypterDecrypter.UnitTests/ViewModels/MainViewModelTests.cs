@@ -15,13 +15,15 @@ public class MainViewModelTests
 {
     private readonly Mock<IEncryptionService> _encryptionServiceMock;
     private readonly Mock<ISettingsService> _settingsServiceMock;
+    private readonly Mock<IClipboardService> _clipboardServiceMock;
     private readonly MainViewModel _viewModel;
 
     public MainViewModelTests()
     {
         _encryptionServiceMock = new Mock<IEncryptionService>();
         _settingsServiceMock = new Mock<ISettingsService>();
-        _viewModel = new MainViewModel(_encryptionServiceMock.Object, _settingsServiceMock.Object);
+        _clipboardServiceMock = new Mock<IClipboardService>();
+        _viewModel = new MainViewModel(_encryptionServiceMock.Object, _settingsServiceMock.Object, _clipboardServiceMock.Object);
     }
 
     [Fact]

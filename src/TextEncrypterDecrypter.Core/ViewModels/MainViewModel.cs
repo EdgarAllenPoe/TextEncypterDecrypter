@@ -12,6 +12,7 @@ public class MainViewModel : INotifyPropertyChanged
 {
     private readonly IEncryptionService _encryptionService;
     private readonly ISettingsService _settingsService;
+    private readonly IClipboardService _clipboardService;
 
     private string _text = string.Empty;
     private string _password = string.Empty;
@@ -19,13 +20,16 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _isLoading = false;
     private string _statusMessage = string.Empty;
 
-           public MainViewModel(IEncryptionService encryptionService, ISettingsService settingsService)
+           public MainViewModel(IEncryptionService encryptionService, ISettingsService settingsService, IClipboardService clipboardService)
            {
                _encryptionService = encryptionService ?? throw new ArgumentNullException(nameof(encryptionService));
                _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+               _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
 
                EncryptCommand = new AsyncRelayCommand(EncryptAsync, CanEncrypt);
                DecryptCommand = new AsyncRelayCommand(DecryptAsync, CanDecrypt);
+               CopyEncryptedTextCommand = new AsyncRelayCommand(CopyEncryptedTextAsync, CanCopyEncryptedText);
+               PasteTextCommand = new AsyncRelayCommand(PasteTextAsync, CanPasteText);
            }
 
     /// <summary>
@@ -83,6 +87,16 @@ public class MainViewModel : INotifyPropertyChanged
     /// </summary>
     public ICommand DecryptCommand { get; }
 
+    /// <summary>
+    /// Command to copy encrypted text to clipboard
+    /// </summary>
+    public ICommand CopyEncryptedTextCommand { get; }
+
+    /// <summary>
+    /// Command to paste text from clipboard
+    /// </summary>
+    public ICommand PasteTextCommand { get; }
+
     private bool CanEncrypt()
     {
         return !string.IsNullOrWhiteSpace(Text) && 
@@ -95,6 +109,16 @@ public class MainViewModel : INotifyPropertyChanged
         return !string.IsNullOrWhiteSpace(EncryptedText) && 
                !string.IsNullOrWhiteSpace(Password) && 
                !IsLoading;
+    }
+
+    private bool CanCopyEncryptedText()
+    {
+        return !string.IsNullOrWhiteSpace(EncryptedText) && !IsLoading;
+    }
+
+    private bool CanPasteText()
+    {
+        return !IsLoading;
     }
 
     private async Task EncryptAsync()
@@ -139,6 +163,54 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    private async Task CopyEncryptedTextAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Copying to clipboard...";
+            
+            await _clipboardService.SetTextAsync(EncryptedText);
+            StatusMessage = "Encrypted text copied to clipboard!";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to copy to clipboard: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task PasteTextAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Pasting from clipboard...";
+            
+            var clipboardText = await _clipboardService.GetTextAsync();
+            if (!string.IsNullOrEmpty(clipboardText))
+            {
+                Text = clipboardText;
+                StatusMessage = "Text pasted from clipboard!";
+            }
+            else
+            {
+                StatusMessage = "Clipboard is empty or contains no text.";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to paste from clipboard: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -160,6 +232,15 @@ public class MainViewModel : INotifyPropertyChanged
                if (propertyName == nameof(EncryptedText) || propertyName == nameof(Password))
                {
                    ((AsyncRelayCommand)DecryptCommand).RaiseCanExecuteChanged();
+               }
+               if (propertyName == nameof(EncryptedText))
+               {
+                   ((AsyncRelayCommand)CopyEncryptedTextCommand).RaiseCanExecuteChanged();
+               }
+               if (propertyName == nameof(IsLoading))
+               {
+                   ((AsyncRelayCommand)CopyEncryptedTextCommand).RaiseCanExecuteChanged();
+                   ((AsyncRelayCommand)PasteTextCommand).RaiseCanExecuteChanged();
                }
                
                return true;
