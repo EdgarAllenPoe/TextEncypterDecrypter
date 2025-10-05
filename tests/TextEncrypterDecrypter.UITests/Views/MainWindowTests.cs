@@ -64,8 +64,8 @@ public class MainWindowTests
         Assert.True(viewModel.IsLoading);
         
         // Test command states after property changes
-        Assert.True(viewModel.EncryptCommand.CanExecute(null)); // Has text and password
-        Assert.True(viewModel.DecryptCommand.CanExecute(null)); // Has encrypted text and password
+        Assert.False(viewModel.EncryptCommand.CanExecute(null)); // Cannot execute when loading
+        Assert.False(viewModel.DecryptCommand.CanExecute(null)); // Cannot execute when loading
     }
 
     [Fact]
