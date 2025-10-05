@@ -52,18 +52,18 @@ if (-not (Test-Path "TextEncrypterDecrypter.sln")) {
     exit 1
 }
 
-Write-Host "👀 Starting test watch mode for TextEncrypterDecrypter..." -ForegroundColor Green
-Write-Host "📦 Configuration: $Configuration" -ForegroundColor Yellow
+Write-Host "Starting test watch mode for TextEncrypterDecrypter..." -ForegroundColor Green
+Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
 
 if ($Category) {
-    Write-Host "🏷️  Category: $Category" -ForegroundColor Yellow
-    Write-Host "👁️  Watching for changes in $Category tests..." -ForegroundColor Cyan
+    Write-Host "Category: $Category" -ForegroundColor Yellow
+    Write-Host "Watching for changes in $Category tests..." -ForegroundColor Cyan
 } else {
-    Write-Host "👁️  Watching for changes in all tests..." -ForegroundColor Cyan
+    Write-Host "Watching for changes in all tests..." -ForegroundColor Cyan
 }
 
 if ($Project) {
-    Write-Host "📁 Project: $Project" -ForegroundColor Yellow
+    Write-Host "Project: $Project" -ForegroundColor Yellow
     if (-not (Test-Path $Project)) {
         Write-Error "Project file not found: $Project"
         exit 1
@@ -71,7 +71,7 @@ if ($Project) {
 }
 
 Write-Host ""
-Write-Host "💡 TDD Tips:" -ForegroundColor Magenta
+Write-Host "TDD Tips:" -ForegroundColor Magenta
 Write-Host "   • Write a failing test first (RED)" -ForegroundColor White
 Write-Host "   • Make it pass with minimal code (GREEN)" -ForegroundColor White
 Write-Host "   • Refactor while keeping tests green (REFACTOR)" -ForegroundColor White
@@ -93,7 +93,7 @@ if ($Verbose) {
     $watchArgs += @("--verbosity", "normal")
 }
 
-Write-Host "🚀 Executing: dotnet $($watchArgs -join ' ')" -ForegroundColor Cyan
+Write-Host "Executing: dotnet $($watchArgs -join ' ')" -ForegroundColor Cyan
 Write-Host ""
 
 & dotnet $watchArgs

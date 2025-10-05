@@ -49,48 +49,48 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "📦 Publishing TextEncrypterDecrypter application..." -ForegroundColor Green
-Write-Host "🔧 Profile: $Profile" -ForegroundColor Yellow
-Write-Host "📦 Configuration: $Configuration" -ForegroundColor Yellow
+Write-Host "Publishing TextEncrypterDecrypter application..." -ForegroundColor Green
+Write-Host "Profile: $Profile" -ForegroundColor Yellow
+Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
 
 # Ensure we're in the correct directory
 $projectPath = "src/TextEncrypterDecrypter.App/TextEncrypterDecrypter.App.csproj"
 if (-not (Test-Path $projectPath)) {
-    Write-Error "❌ Project file not found: $projectPath"
+    Write-Error "Project file not found: $projectPath"
     Write-Error "Please run this script from the solution root directory"
     exit 1
 }
 
 if ($Clean) {
-    Write-Host "🧹 Cleaning solution..." -ForegroundColor Yellow
+    Write-Host "Cleaning solution..." -ForegroundColor Yellow
     $cleanArgs = @("clean", "--configuration", $Configuration)
     if ($Verbose) { $cleanArgs += "--verbosity", "normal" }
     
     & dotnet $cleanArgs
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "❌ Clean failed"
+        Write-Error "Clean failed"
         exit 1
     }
 }
 
-Write-Host "🔨 Building solution..." -ForegroundColor Yellow
+Write-Host "Building solution..." -ForegroundColor Yellow
 $buildArgs = @("build", "--configuration", $Configuration)
 if ($Verbose) { $buildArgs += "--verbosity", "normal" }
 
 & dotnet $buildArgs
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "❌ Build failed"
+    Write-Error "Build failed"
     exit 1
 }
 
-Write-Host "📦 Publishing application..." -ForegroundColor Yellow
+Write-Host "Publishing application..." -ForegroundColor Yellow
 $publishArgs = @("publish", $projectPath, "-p:PublishProfile=$Profile", "--configuration", $Configuration)
 if ($Verbose) { $publishArgs += "--verbosity", "normal" }
 
 & dotnet $publishArgs
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "❌ Publish failed"
+    Write-Error "Publish failed"
     exit 1
 }
 
@@ -111,12 +111,12 @@ foreach ($path in $possiblePaths) {
 
 if ($publishDir) {
     Write-Host ""
-    Write-Host "✅ Publish completed successfully!" -ForegroundColor Green
-    Write-Host "📁 Output directory: $publishDir" -ForegroundColor Cyan
+    Write-Host "Publish completed successfully!" -ForegroundColor Green
+    Write-Host "Output directory: $publishDir" -ForegroundColor Cyan
     
     # Show publish directory contents with better formatting
     Write-Host ""
-    Write-Host "📋 Publish directory contents:" -ForegroundColor Yellow
+    Write-Host "Publish directory contents:" -ForegroundColor Yellow
     $files = Get-ChildItem $publishDir
     if ($files.Count -gt 0) {
         $files | ForEach-Object {
@@ -127,7 +127,7 @@ if ($publishDir) {
             } else { 
                 "$($_.Length) B" 
             }
-            Write-Host "   📄 $($_.Name) ($size)" -ForegroundColor White
+            Write-Host "   $($_.Name) ($size)" -ForegroundColor White
         }
         
         # Show total size
@@ -140,20 +140,20 @@ if ($publishDir) {
             "$totalSize B" 
         }
         Write-Host ""
-        Write-Host "📊 Total size: $totalSizeFormatted" -ForegroundColor Cyan
+        Write-Host "Total size: $totalSizeFormatted" -ForegroundColor Cyan
     }
     
     if ($Open) {
         Write-Host ""
-        Write-Host "🔍 Opening publish directory..." -ForegroundColor Yellow
+        Write-Host "Opening publish directory..." -ForegroundColor Yellow
         Start-Process explorer.exe $publishDir
     }
 } else {
-    Write-Warning "⚠️  Publish directory not found. Checked paths:"
+    Write-Warning "Publish directory not found. Checked paths:"
     foreach ($path in $possiblePaths) {
         Write-Warning "   • $path"
     }
 }
 
 Write-Host ""
-Write-Host "✅ Publish completed!" -ForegroundColor Green
+Write-Host "Publish completed!" -ForegroundColor Green

@@ -45,41 +45,41 @@ if (-not (Test-Path "TextEncrypterDecrypter.sln")) {
     exit 1
 }
 
-Write-Host "🔨 Building TextEncrypterDecrypter solution..." -ForegroundColor Green
-Write-Host "📦 Configuration: $Configuration" -ForegroundColor Yellow
+Write-Host "Building TextEncrypterDecrypter solution..." -ForegroundColor Green
+Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
 
 if ($Clean) {
-    Write-Host "🧹 Cleaning solution..." -ForegroundColor Yellow
+    Write-Host "Cleaning solution..." -ForegroundColor Yellow
     $cleanArgs = @("clean", "--configuration", $Configuration)
     if ($Verbose) { $cleanArgs += "--verbosity", "normal" }
     
     & dotnet $cleanArgs
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "❌ Clean failed"
+        Write-Error "Clean failed"
         exit 1
     }
 }
 
 if (-not $NoRestore) {
-    Write-Host "📥 Restoring packages..." -ForegroundColor Yellow
+    Write-Host "Restoring packages..." -ForegroundColor Yellow
     $restoreArgs = @("restore")
     if ($Verbose) { $restoreArgs += "--verbosity", "normal" }
     
     & dotnet $restoreArgs
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "❌ Restore failed"
+        Write-Error "Restore failed"
         exit 1
     }
 }
 
-Write-Host "🔨 Building solution..." -ForegroundColor Yellow
+Write-Host "Building solution..." -ForegroundColor Yellow
 $buildArgs = @("build", "--configuration", $Configuration, "--no-restore")
 if ($Verbose) { $buildArgs += "--verbosity", "normal" }
 
 & dotnet $buildArgs
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "❌ Build failed"
+    Write-Error "Build failed"
     exit 1
 }
 
-Write-Host "✅ Build completed successfully!" -ForegroundColor Green
+Write-Host "Build completed successfully!" -ForegroundColor Green
