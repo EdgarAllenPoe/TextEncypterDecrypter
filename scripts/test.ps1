@@ -19,6 +19,12 @@
 .PARAMETER Watch
     Run tests in watch mode.
 
+.PARAMETER Verbose
+    Enable verbose output.
+
+.PARAMETER NoBuild
+    Skip build step.
+
 .EXAMPLE
     .\test.ps1
     Runs all tests in Release configuration.
@@ -40,57 +46,82 @@ param(
     [string]$Category,
     
     [switch]$Coverage,
-    
-    [switch]$Watch
+    [switch]$Watch,
+    [switch]$Verbose,
+    [switch]$NoBuild
 )
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "Running TextEncrypterDecrypter tests..." -ForegroundColor Green
-Write-Host "Configuration: $Configuration" -ForegroundColor Yellow
-
-if ($Category) {
-    Write-Host "Category: $Category" -ForegroundColor Yellow
+# Ensure we're in the correct directory
+if (-not (Test-Path "TextEncrypterDecrypter.sln")) {
+    Write-Error "Solution file not found. Please run this script from the solution root directory."
+    exit 1
 }
 
-$testArgs = @("test", "--configuration", $Configuration, "--no-build")
+Write-Host "🧪 Running TextEncrypterDecrypter tests..." -ForegroundColor Green
+Write-Host "📦 Configuration: $Configuration" -ForegroundColor Yellow
+
+if ($Category) {
+    Write-Host "🏷️  Category: $Category" -ForegroundColor Yellow
+}
+
+if ($Coverage) {
+    Write-Host "📊 Coverage collection enabled" -ForegroundColor Yellow
+}
+
+if ($Watch) {
+    Write-Host "👀 Watch mode enabled" -ForegroundColor Yellow
+}
+
+$testArgs = @("test", "--configuration", $Configuration)
+
+if (-not $NoBuild) {
+    $testArgs += "--no-build"
+}
 
 if ($Coverage) {
     $testArgs += @("--collect:XPlat Code Coverage", "--results-directory", "./coverage")
-    Write-Host "Coverage collection enabled" -ForegroundColor Yellow
 }
 
 if ($Category) {
     $testArgs += @("--filter", "Category=$Category")
 }
 
-if ($Watch) {
-    $testArgs = @("watch", "test") + $testArgs[1..($testArgs.Length-1)]
-    Write-Host "Watch mode enabled" -ForegroundColor Yellow
+if ($Verbose) {
+    $testArgs += @("--verbosity", "normal")
 }
 
-Write-Host "Executing: dotnet $($testArgs -join ' ')" -ForegroundColor Cyan
+if ($Watch) {
+    $testArgs = @("watch", "test") + $testArgs[2..($testArgs.Length-1)]
+}
+
+Write-Host "🚀 Executing: dotnet $($testArgs -join ' ')" -ForegroundColor Cyan
+Write-Host ""
+
 & dotnet $testArgs
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Tests failed"
+    Write-Error "❌ Tests failed"
     exit 1
 }
 
 if ($Coverage -and -not $Watch) {
-    Write-Host "Generating coverage report..." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "📊 Generating coverage report..." -ForegroundColor Yellow
     
     # Install reportgenerator if not already installed
     $reportGenerator = dotnet tool list -g | Select-String "reportgenerator-globaltool"
     if (-not $reportGenerator) {
-        Write-Host "Installing reportgenerator-globaltool..." -ForegroundColor Yellow
+        Write-Host "📦 Installing reportgenerator-globaltool..." -ForegroundColor Yellow
         dotnet tool install -g dotnet-reportgenerator-globaltool
     }
     
     # Generate HTML report
     reportgenerator -reports:"coverage/**/*.cobertura.xml" -targetdir:"coverage/report" -reporttypes:"Html;Cobertura"
     
-    Write-Host "Coverage report generated at: coverage/report/index.html" -ForegroundColor Green
+    Write-Host "📊 Coverage report generated at: coverage/report/index.html" -ForegroundColor Green
 }
 
-Write-Host "Tests completed successfully!" -ForegroundColor Green
+Write-Host ""
+Write-Host "✅ Tests completed successfully!" -ForegroundColor Green

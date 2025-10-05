@@ -3,12 +3,10 @@
         xmlns:vm="using:TextEncrypterDecrypter.Core.ViewModels"
         x:DataType="vm:MainViewModel"
         x:Class="TextEncrypterDecrypter.App.Views.MainWindow"
-        Title="TextEncrypterDecrypter" Width="600" Height="500"
-        Icon="/Assets/avalonia-logo.ico">
+        Title="Text Encrypter/Decrypter" Width="600" Height="400">
 
   <Grid Margin="20">
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -24,7 +22,7 @@
                HorizontalAlignment="Center"
                Margin="0,0,0,20"/>
     
-    <!-- Text Input with Paste Button -->
+    <!-- Single Text Field with Copy/Paste Buttons -->
     <Grid Grid.Row="1" Margin="0,0,0,10">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
@@ -32,15 +30,23 @@
       </Grid.ColumnDefinitions>
       <TextBox Grid.Column="0"
                Text="{Binding Text}" 
-               Watermark="Enter text to encrypt/decrypt..."
+               Watermark="Enter text to encrypt or paste encrypted text to decrypt..."
                AcceptsReturn="True"
-               Height="100"/>
-      <Button Grid.Column="1"
-              Content="📋 Paste"
-              Command="{Binding PasteTextCommand}"
-              Margin="10,0,0,0"
-              IsEnabled="{Binding !IsLoading}"
-              VerticalAlignment="Top"/>
+               Height="120"/>
+      <StackPanel Grid.Column="1" 
+                  Orientation="Vertical" 
+                  Margin="10,0,0,0"
+                  VerticalAlignment="Top">
+        <Button Content="📋 Paste"
+                Command="{Binding PasteTextCommand}"
+                IsEnabled="{Binding !IsLoading}"
+                Margin="0,0,0,5"
+                Width="80"/>
+        <Button Content="📋 Copy"
+                Command="{Binding CopyTextCommand}"
+                IsEnabled="{Binding !IsLoading}"
+                Width="80"/>
+      </StackPanel>
     </Grid>
     
     <!-- Password Input -->
@@ -50,38 +56,21 @@
              Watermark="Enter password..."
              Margin="0,0,0,10"/>
     
-    <!-- Buttons -->
-    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,10">
+    <!-- Encrypt/Decrypt Buttons -->
+    <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,0,0,10">
       <Button Content="🔒 Encrypt" 
               Command="{Binding EncryptCommand}"
               Margin="0,0,10,0"
-              IsEnabled="{Binding !IsLoading}"/>
+              IsEnabled="{Binding !IsLoading}"
+              Width="100"/>
       <Button Content="🔓 Decrypt" 
               Command="{Binding DecryptCommand}"
-              IsEnabled="{Binding !IsLoading}"/>
+              IsEnabled="{Binding !IsLoading}"
+              Width="100"/>
     </StackPanel>
     
-    <!-- Encrypted Text Output with Copy Button -->
-    <Grid Grid.Row="4" Margin="0,0,0,10">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
-      <TextBox Grid.Column="0"
-               Text="{Binding EncryptedText}" 
-               IsReadOnly="True"
-               Watermark="Encrypted text will appear here..."
-               AcceptsReturn="True"/>
-      <Button Grid.Column="1"
-              Content="📋 Copy"
-              Command="{Binding CopyEncryptedTextCommand}"
-              Margin="10,0,0,0"
-              IsEnabled="{Binding !IsLoading}"
-              VerticalAlignment="Top"/>
-    </Grid>
-    
     <!-- Status/Error Messages -->
-    <StackPanel Grid.Row="5" Orientation="Horizontal">
+    <StackPanel Grid.Row="4" Orientation="Horizontal">
       <TextBlock Text="{Binding StatusMessage}"
                  Foreground="Red"
                  VerticalAlignment="Center"/>

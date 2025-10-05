@@ -81,7 +81,7 @@ public class MainViewModelTests
     public void DecryptCommand_WhenCanExecute_ExecutesSuccessfully()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text";
+        _viewModel.Text = "encrypted_text";
         _viewModel.Password = "testpassword123";
         _encryptionServiceMock.Setup(x => x.DecryptAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync("Hello, World!");
@@ -136,7 +136,7 @@ public class MainViewModelTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public void EncryptAsync_WithValidInput_SetsEncryptedText()
+    public void EncryptAsync_WithValidInput_SetsText()
     {
         // Arrange
         _viewModel.Text = "Hello, World!";
@@ -150,7 +150,7 @@ public class MainViewModelTests
         command.Execute(null);
 
         // Assert
-        Assert.Equal(expectedEncrypted, _viewModel.EncryptedText);
+        Assert.Equal(expectedEncrypted, _viewModel.Text);
         _encryptionServiceMock.Verify(x => x.EncryptAsync("Hello, World!", "testpassword123"), Times.Once);
     }
 
@@ -159,7 +159,7 @@ public class MainViewModelTests
     public void DecryptAsync_WithValidInput_SetsText()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text";
+        _viewModel.Text = "encrypted_text";
         _viewModel.Password = "testpassword123";
         var expectedDecrypted = "Hello, World!";
         _encryptionServiceMock.Setup(x => x.DecryptAsync("encrypted_text", "testpassword123"))

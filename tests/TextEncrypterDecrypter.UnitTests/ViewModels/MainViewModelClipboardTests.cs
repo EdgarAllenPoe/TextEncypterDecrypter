@@ -27,13 +27,13 @@ public class MainViewModelClipboardTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public void CopyEncryptedTextCommand_WhenEncryptedTextExists_CanExecute()
+    public void CopyTextCommand_WhenTextExists_CanExecute()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text_here";
+        _viewModel.Text = "encrypted_text_here";
 
         // Act
-        var command = _viewModel.CopyEncryptedTextCommand;
+        var command = _viewModel.CopyTextCommand;
         var canExecute = command.CanExecute(null);
 
         // Assert
@@ -42,13 +42,13 @@ public class MainViewModelClipboardTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public void CopyEncryptedTextCommand_WhenEncryptedTextIsEmpty_CannotExecute()
+    public void CopyTextCommand_WhenTextIsEmpty_CannotExecute()
     {
         // Arrange
-        _viewModel.EncryptedText = string.Empty;
+        _viewModel.Text = string.Empty;
 
         // Act
-        var command = _viewModel.CopyEncryptedTextCommand;
+        var command = _viewModel.CopyTextCommand;
         var canExecute = command.CanExecute(null);
 
         // Assert
@@ -57,14 +57,14 @@ public class MainViewModelClipboardTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public void CopyEncryptedTextCommand_WhenLoading_CannotExecute()
+    public void CopyTextCommand_WhenLoading_CannotExecute()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text";
+        _viewModel.Text = "encrypted_text";
         _viewModel.IsLoading = true;
 
         // Act
-        var command = _viewModel.CopyEncryptedTextCommand;
+        var command = _viewModel.CopyTextCommand;
         var canExecute = command.CanExecute(null);
 
         // Assert
@@ -103,15 +103,15 @@ public class MainViewModelClipboardTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public async Task CopyEncryptedTextAsync_WithValidEncryptedText_SetsTextToClipboard()
+    public async Task CopyTextAsync_WithValidText_SetsTextToClipboard()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text_to_copy";
+        _viewModel.Text = "encrypted_text_to_copy";
         _clipboardServiceMock.Setup(x => x.SetTextAsync("encrypted_text_to_copy"))
             .Returns(Task.CompletedTask);
 
         // Act
-        var command = _viewModel.CopyEncryptedTextCommand;
+        var command = _viewModel.CopyTextCommand;
         command.Execute(null);
 
         // Give it a moment to complete
@@ -119,7 +119,7 @@ public class MainViewModelClipboardTests
 
         // Assert
         _clipboardServiceMock.Verify(x => x.SetTextAsync("encrypted_text_to_copy"), Times.Once);
-        Assert.Equal("Encrypted text copied to clipboard!", _viewModel.StatusMessage);
+        Assert.Equal("Text copied to clipboard!", _viewModel.StatusMessage);
         Assert.False(_viewModel.IsLoading);
     }
 
@@ -169,15 +169,15 @@ public class MainViewModelClipboardTests
 
     [Fact]
     [Trait("Category", TestCategories.Unit)]
-    public async Task CopyEncryptedTextAsync_WhenClipboardFails_ShowsError()
+    public async Task CopyTextAsync_WhenClipboardFails_ShowsError()
     {
         // Arrange
-        _viewModel.EncryptedText = "encrypted_text";
+        _viewModel.Text = "encrypted_text";
         _clipboardServiceMock.Setup(x => x.SetTextAsync(It.IsAny<string>()))
             .ThrowsAsync(new Exception("Clipboard access denied"));
 
         // Act
-        var command = _viewModel.CopyEncryptedTextCommand;
+        var command = _viewModel.CopyTextCommand;
         command.Execute(null);
 
         // Give it a moment to complete

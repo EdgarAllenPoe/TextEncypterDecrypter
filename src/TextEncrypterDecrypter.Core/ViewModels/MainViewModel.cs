@@ -16,7 +16,6 @@ public class MainViewModel : INotifyPropertyChanged
 
     private string _text = string.Empty;
     private string _password = string.Empty;
-    private string _encryptedText = string.Empty;
     private bool _isLoading = false;
     private string _statusMessage = string.Empty;
 
@@ -28,7 +27,7 @@ public class MainViewModel : INotifyPropertyChanged
 
                EncryptCommand = new AsyncRelayCommand(EncryptAsync, CanEncrypt);
                DecryptCommand = new AsyncRelayCommand(DecryptAsync, CanDecrypt);
-               CopyEncryptedTextCommand = new AsyncRelayCommand(CopyEncryptedTextAsync, CanCopyEncryptedText);
+               CopyTextCommand = new AsyncRelayCommand(CopyTextAsync, CanCopyText);
                PasteTextCommand = new AsyncRelayCommand(PasteTextAsync, CanPasteText);
            }
 
@@ -50,14 +49,6 @@ public class MainViewModel : INotifyPropertyChanged
         set => SetProperty(ref _password, value);
     }
 
-    /// <summary>
-    /// The encrypted text result
-    /// </summary>
-    public string EncryptedText
-    {
-        get => _encryptedText;
-        set => SetProperty(ref _encryptedText, value);
-    }
 
     /// <summary>
     /// Whether an operation is in progress
@@ -88,9 +79,9 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand DecryptCommand { get; }
 
     /// <summary>
-    /// Command to copy encrypted text to clipboard
+    /// Command to copy text to clipboard
     /// </summary>
-    public ICommand CopyEncryptedTextCommand { get; }
+    public ICommand CopyTextCommand { get; }
 
     /// <summary>
     /// Command to paste text from clipboard
@@ -104,16 +95,17 @@ public class MainViewModel : INotifyPropertyChanged
                !IsLoading;
     }
 
+
     private bool CanDecrypt()
     {
-        return !string.IsNullOrWhiteSpace(EncryptedText) && 
+        return !string.IsNullOrWhiteSpace(Text) && 
                !string.IsNullOrWhiteSpace(Password) && 
                !IsLoading;
     }
 
-    private bool CanCopyEncryptedText()
+    private bool CanCopyText()
     {
-        return !string.IsNullOrWhiteSpace(EncryptedText) && !IsLoading;
+        return !string.IsNullOrWhiteSpace(Text) && !IsLoading;
     }
 
     private bool CanPasteText()
@@ -129,7 +121,7 @@ public class MainViewModel : INotifyPropertyChanged
             StatusMessage = "Encrypting...";
             
             var encrypted = await _encryptionService.EncryptAsync(Text, Password);
-            EncryptedText = encrypted;
+            Text = encrypted;
             StatusMessage = "Text encrypted successfully!";
         }
         catch (Exception ex)
@@ -149,7 +141,7 @@ public class MainViewModel : INotifyPropertyChanged
             IsLoading = true;
             StatusMessage = "Decrypting...";
             
-            var decrypted = await _encryptionService.DecryptAsync(EncryptedText, Password);
+            var decrypted = await _encryptionService.DecryptAsync(Text, Password);
             Text = decrypted;
             StatusMessage = "Text decrypted successfully!";
         }
@@ -163,15 +155,15 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private async Task CopyEncryptedTextAsync()
+    private async Task CopyTextAsync()
     {
         try
         {
             IsLoading = true;
             StatusMessage = "Copying to clipboard...";
             
-            await _clipboardService.SetTextAsync(EncryptedText);
-            StatusMessage = "Encrypted text copied to clipboard!";
+            await _clipboardService.SetTextAsync(Text);
+            StatusMessage = "Text copied to clipboard!";
         }
         catch (Exception ex)
         {
@@ -228,18 +220,12 @@ public class MainViewModel : INotifyPropertyChanged
                if (propertyName == nameof(Text) || propertyName == nameof(Password))
                {
                    ((AsyncRelayCommand)EncryptCommand).RaiseCanExecuteChanged();
-               }
-               if (propertyName == nameof(EncryptedText) || propertyName == nameof(Password))
-               {
                    ((AsyncRelayCommand)DecryptCommand).RaiseCanExecuteChanged();
-               }
-               if (propertyName == nameof(EncryptedText))
-               {
-                   ((AsyncRelayCommand)CopyEncryptedTextCommand).RaiseCanExecuteChanged();
+                   ((AsyncRelayCommand)CopyTextCommand).RaiseCanExecuteChanged();
                }
                if (propertyName == nameof(IsLoading))
                {
-                   ((AsyncRelayCommand)CopyEncryptedTextCommand).RaiseCanExecuteChanged();
+                   ((AsyncRelayCommand)CopyTextCommand).RaiseCanExecuteChanged();
                    ((AsyncRelayCommand)PasteTextCommand).RaiseCanExecuteChanged();
                }
                
@@ -291,4 +277,5 @@ public class AsyncRelayCommand : ICommand
     {
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
+
 }

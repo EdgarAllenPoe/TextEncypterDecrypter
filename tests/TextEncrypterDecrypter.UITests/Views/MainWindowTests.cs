@@ -29,7 +29,7 @@ public class MainWindowTests
         Assert.NotNull(viewModel);
         Assert.NotNull(viewModel.Text);
         Assert.NotNull(viewModel.Password);
-        Assert.NotNull(viewModel.EncryptedText);
+        Assert.NotNull(viewModel.Text);
         Assert.NotNull(viewModel.StatusMessage);
         Assert.False(viewModel.IsLoading);
         
@@ -52,20 +52,20 @@ public class MainWindowTests
         // Act - Simulate UI property changes
         viewModel.Text = "Test text";
         viewModel.Password = "testpassword";
-        viewModel.EncryptedText = "encrypted_result";
         viewModel.StatusMessage = "Test status";
         viewModel.IsLoading = true;
         
         // Assert - Verify properties are updated
         Assert.Equal("Test text", viewModel.Text);
         Assert.Equal("testpassword", viewModel.Password);
-        Assert.Equal("encrypted_result", viewModel.EncryptedText);
         Assert.Equal("Test status", viewModel.StatusMessage);
         Assert.True(viewModel.IsLoading);
         
         // Test command states after property changes
         Assert.False(viewModel.EncryptCommand.CanExecute(null)); // Cannot execute when loading
         Assert.False(viewModel.DecryptCommand.CanExecute(null)); // Cannot execute when loading
+        Assert.False(viewModel.CopyTextCommand.CanExecute(null)); // Cannot execute when loading
+        Assert.False(viewModel.PasteTextCommand.CanExecute(null)); // Cannot execute when loading
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class MainWindowTests
         var mainViewModel = (MainViewModel)dataContext;
         Assert.NotNull(mainViewModel.Text);
         Assert.NotNull(mainViewModel.Password);
-        Assert.NotNull(mainViewModel.EncryptedText);
+        Assert.NotNull(mainViewModel.Text);
         Assert.NotNull(mainViewModel.StatusMessage);
         Assert.NotNull(mainViewModel.EncryptCommand);
         Assert.NotNull(mainViewModel.DecryptCommand);
